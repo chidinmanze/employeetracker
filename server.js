@@ -44,7 +44,7 @@ function intro() {
         update();
       } 
     });
-}
+};
 
 function view() {
   inquirer.prompt({
@@ -57,19 +57,22 @@ function view() {
     if (answer.view === "department") {
       connection.query("SELECT * FROM department", function (err, data) {
         console.table(data);
+        return
       })
 
     }else if (answer.view === "role") {
         connection.query("SELECT * FROM role", function (err, data) {
           console.table(data);
+          return
         })
 
       }else if (answer.view === "employee") {
         connection.query("SELECT * FROM employee", function (err, data) {
           console.table(data);
+          return
         })
 
-  }})
+  }});
 };
 
 function update() {
@@ -80,20 +83,19 @@ function update() {
     choices: ["department", "role", "employee"]
   })
   .then(function(answer) {
-    if (answer.view === "department") {
-      updateDepartment();
-      } else if (answer.view === "role") {
-        updateRole();
-        }else if (answer.view === "employee") {
-       updateEmployee();
+    if (answer.update === "department") {
+      updateDepartment()
+      } else if (answer.update === "role") {
+        updateRole()
+        }else if (answer.update === "employee") {
+       updateEmployee()
 
-  }})
+  }});
 
 };
 
-updateDepartment() { 
-  inquirer.prompt([
-    
+function updateDepartment() {
+    inquirer.prompt([
   {
     name: "newid",
     type: "input",
@@ -109,6 +111,39 @@ updateDepartment() {
   .then(function(response) {
     connection.query("INSERT INTO department (department_id, name) values (?, ?)", [response.newid, response.newdept], function (err, data) {
       console.table(data);
-  }})
+    })
+  });
 
+};
+
+function updateRole() {
+  inquirer.prompt([
+    {
+      name: "roleid",
+      type: "input",
+      message: "What is the ID of the new role would you like add to add?"
+    },
+  
+    {
+      name: "title",
+      type: "input",
+      message: "What is the title of the new role would you like add to add?"
+   },
+   {
+    name: "salary",
+    type: "input",
+    message: "What is the salary of the new role would you like add to add?"
+ },
+ {
+  name: "deptid",
+  type: "input",
+  message: "What is the department ID of the new role would you like add to add?"
+}
+   
+  ])
+    .then(function(response) {
+      connection.query("INSERT INTO role (role_id, title, salary, deptid) values (?, ?, ?, ?)", [response.roleid, response.title, response.salary, response.deptid], function (err, data) {
+        console.table(data);
+      })
+    });
 };
