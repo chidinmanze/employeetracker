@@ -79,22 +79,23 @@ function update() {
   inquirer.prompt({
     name: "update",
     type: "list",
-    message: "Which table would you like to update?",
-    choices: ["department", "role", "employee"]
+    message: "What would you like to do?",
+    choices: ["Add new department", "Add new role", "Add new employee", "Update employee role"]
   })
   .then(function(answer) {
-    if (answer.update === "department") {
-      updateDepartment()
-      } else if (answer.update === "role") {
-        updateRole()
-        }else if (answer.update === "employee") {
-       updateEmployee()
-
-  }});
+    if (answer.update === "Add new department") {
+      newDepartment()
+      } else if (answer.update === "Add new role") {
+        newRole()
+        }else if (answer.update === "Add new employee") {
+       newEmployee() 
+        }else if (answer.update === "Update employee role") {
+        updateEmployee() 
+    }});
 
 };
 
-function updateDepartment() {
+function newDepartment() {
     inquirer.prompt([
   {
     name: "newid",
@@ -116,7 +117,7 @@ function updateDepartment() {
 
 };
 
-function updateRole() {
+function newRole() {
   inquirer.prompt([
     {
       name: "roleid",
@@ -142,8 +143,69 @@ function updateRole() {
    
   ])
     .then(function(response) {
-      connection.query("INSERT INTO role (role_id, title, salary, deptid) values (?, ?, ?, ?)", [response.roleid, response.title, response.salary, response.deptid], function (err, data) {
+      connection.query("INSERT INTO role (role_id, title, salary, department_id) values (?, ?, ?, ?)", [response.roleid, response.title, response.salary, response.deptid], function (err, data) {
         console.table(data);
       })
     });
+};
+
+function newEmployee() {
+  inquirer.prompt([
+    {
+      name: "empid",
+      type: "input",
+      message: "What is the ID of the new employee would you like add to add?"
+    },
+  
+    {
+      name: "firstname",
+      type: "input",
+      message: "What is the first name of the new role would you like add to add?"
+   },
+   {
+    name: "lastname",
+    type: "input",
+    message: "What is the last name of the new employee would you like add to add?"
+ },
+ {
+  name: "roleid",
+  type: "input",
+  message: "What is the role ID of the new employee would you like add to add?"
+},
+{
+  name: "managerid",
+  type: "input",
+  message: "What is the employee ID of this employee's manager?"
+}
+   
+  ])
+    .then(function(response) {
+      connection.query("INSERT INTO employee (emp_id, first_name, last_name, role_id, manager_id) values (?, ?, ?, ?, ?)", [response.empid, response.firstname, response.lastname, response.roleid, response.managerid], function (err, data) {
+        console.table(data);
+      })
+    });
+};
+
+function updateEmployee() {
+  
+  inquirer.prompt([
+  {
+    name: "currentempid",
+    type: "number",
+    message: "What is the employee ID of the employee receiving a new role ID?"
+
+  },
+
+  {
+    name: "newroleid",
+    type: "number",
+    message: "What is the new role ID of this employee?"
+ }
+])
+  .then(function(response) {
+    connection.query("UPDATE employee WHERE emp_id = ? SET role_id = ? values (?, ?)", [response.currentempid, response.newroleid], function (err, data) {
+      console.table(data);
+    })
+  });
+
 };
