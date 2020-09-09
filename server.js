@@ -180,6 +180,7 @@ function newEmployee() {
    
   ])
     .then(function(response) {
+      console.log(response)
       connection.query("INSERT INTO employee (emp_id, first_name, last_name, role_id, manager_id) values (?, ?, ?, ?, ?)", [response.empid, response.firstname, response.lastname, response.roleid, response.managerid], function (err, data) {
         console.table(data);
       })
@@ -189,21 +190,21 @@ function newEmployee() {
 function updateEmployee() {
   
   inquirer.prompt([
+    {
+      name: "newroleid",
+      type: "number",
+      message: "What is the new role ID of this employee?"
+   },
   {
     name: "currentempid",
     type: "number",
     message: "What is the employee ID of the employee receiving a new role ID?"
+  }
 
-  },
-
-  {
-    name: "newroleid",
-    type: "number",
-    message: "What is the new role ID of this employee?"
- }
 ])
   .then(function(response) {
-    connection.query("UPDATE employee WHERE emp_id = ? SET role_id = ? values (?, ?)", [response.currentempid, response.newroleid], function (err, data) {
+    console.log(response);
+    connection.query("SELECT * FROM employee SET role_id = ? WHERE emp_id = ? values (?, ?)", [response.newroleid, response.currentempid], function (err, data) {
       console.table(data);
     })
   });
